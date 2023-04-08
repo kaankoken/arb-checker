@@ -1,0 +1,18 @@
+# On Linux `brew install mold`
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+# NOTE: mold does not support macos yet
+# On MacOS, `brew install michaeleisel/zld/zld`
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/bin/zld"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/bin/zld"]
+
+
+[build]
+rustc-wrapper = "sccache"
+
+[registries.crates-io]
+protocol = "sparse"

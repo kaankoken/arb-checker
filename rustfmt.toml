@@ -1,0 +1,5 @@
+max_width = 100
+reorder_imports = true
+match_block_trailing_comma = true
+merge_derives = true
+reorder_modules = true

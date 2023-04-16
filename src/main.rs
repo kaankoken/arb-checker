@@ -9,7 +9,7 @@ use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 #[command(author, version, about, long_about = None)]
 struct Cli {
     /// List JSON or arb files keys to checked
-    #[arg(short, long, value_delimiter = ' ')]
+    #[arg(short, long, value_delimiter = ' ', required = true)]
     file: Vec<String>,
 }
 
@@ -102,6 +102,7 @@ fn main() -> Result<()> {
     color_eyre::install()?;
 
     let cli = Cli::parse();
+
     if cli.file.len() < 2 {
         return Err(color_eyre::eyre::eyre!("provide at least two files"));
     }

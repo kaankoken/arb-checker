@@ -3,7 +3,7 @@ use color_eyre::{
     eyre::{Context, ContextCompat},
     Result,
 };
-use std::{collections::HashMap, fs::File, io::BufReader, path::Path, ptr::eq};
+use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -45,7 +45,7 @@ fn check_files_exist<P: AsRef<Path>>(file_path: P) -> Result<()> {
     Ok(())
 }
 
-fn check_key_length(data: &[&Data]) -> Result<()> {
+fn check_key_length(data: &[Data]) -> Result<()> {
     let mut key_lengths = data.iter().map(|d| d.len()).collect::<Vec<usize>>();
     key_lengths.sort();
 
@@ -75,20 +75,25 @@ fn read_json<P: AsRef<Path>>(file_path: P) -> Result<Data> {
     Ok(json)
 }
 
-fn check_files_equal(data: &[&Data]) -> Result<()> {
-    let mut keys = data
+fn check_files_equal(data: Vec<Data>) -> Result<()> {
+    let mut key_iter = data
         .iter()
-        .map(|d| d.keys())
-        .collect::<Vec<_>>();
+        .map(|d| {
+            let mut keys = d.keys().collect::<Vec<_>>();
+            keys.sort();
 
-    /*let first_elem = keys.first().wrap_err("no first element")?;
+            keys
+        })
+        .collect::<Vec<_>>()
+        .into_iter();
 
-    for key in keys {
+    let first = key_iter.next().wrap_err("could not get first item")?;
 
-        if !eq(&first_elem, &key) {
+    for key in key_iter {
+        if first.ne(&key) {
             return Err(color_eyre::eyre::eyre!("files does not have the same keys"));
         }
-    }*/
+    }
 
     Ok(())
 }
@@ -97,20 +102,24 @@ fn main() -> Result<()> {
     color_eyre::install()?;
 
     let cli = Cli::parse();
-
     if cli.file.len() < 2 {
         return Err(color_eyre::eyre::eyre!("provide at least two files"));
     }
 
     check_file_ext(&cli.file)?;
-    check_files_exist(&cli.file[0])?;
 
-    let res = read_json(&cli.file[0])?;
-    let res1 = read_json(&cli.file[1])?;
+    for file in &cli.file {
+        check_files_exist(file)?;
+    }
 
-    check_key_length(&[&res, &res1])?;
-    check_files_equal(&[&res, &res1])?;
-    // TODO: check keys are same
+    let mut file_vec: Vec<Data> = vec![];
+    for file in &cli.file {
+        let res = read_json(file)?;
+        file_vec.push(res);
+    }
+
+    check_key_length(&file_vec)?;
+    check_files_equal(file_vec)?;
 
     Ok(())
 }

@@ -35,7 +35,7 @@ With these guidelines, a sample commit message might look like this:
 ```bash
 feat(search): add search suggestions feature
 
-This commit adds a new feature that displays search suggestions as users type in the search box. 
+This commit adds a new feature that displays search suggestions as users type in the search box.
 
 The new feature is implemented using a third-party library that provides real-time search suggestions based on user input.
 

@@ -32,15 +32,28 @@ jobs:
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
-  check-files:
+
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - name: Install minimal stable with clippy and rustfmt
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          components: rustfmt, clippy
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
       - uses: pre-commit/action@v3.0.0
+
+  clippy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: rustup component add clippy
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-targets -- -D warnings
+
+  audit-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,8 @@
 ci:
   autofix_prs: false
 
+exclude: '.*\.json$'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0

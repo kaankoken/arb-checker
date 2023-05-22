@@ -1,11 +1,7 @@
 [tasks.unit-tests]
-script = ''' 
-files=$(git ls-files --exclude-standard --cached --others | xargs -I{} basename {} | grep "_unit_test" | sed 's/\.rs$//')
-for file in $files; do
-cargo test --test $file
-done
-'''
-script_runner = "@shell"
+command = "cargo"
+args = ["test", "--bins"]
+dependencies = ["clean"]
 
 [tasks.prop-tests]
 script = ''' 

@@ -1,0 +1,22 @@
+[tasks.unit-tests]
+command = "cargo"
+args = ["test", "--bins"]
+dependencies = ["clean"]
+
+[tasks.prop-tests]
+script = ''' 
+files=$(git ls-files --exclude-standard --cached --others | xargs -I{} basename {} | grep "_prop_test" | sed 's/\.rs$//')
+for file in $files; do
+cargo test --test $file
+done
+'''
+script_runner = "@shell"
+
+[tasks.integration-tests]
+script = ''' 
+files=$(git ls-files --exclude-standard --cached --others | xargs -I{} basename {} | grep "_integration_test" | sed 's/\.rs$//')
+for file in $files; do
+cargo test --test $file
+done
+'''
+script_runner = "@shell"

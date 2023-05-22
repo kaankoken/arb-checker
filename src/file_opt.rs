@@ -260,5 +260,5 @@ pub fn read_json<P: AsRef<Path>>(file_path: P) -> Result<Data> {
 }
 
 #[cfg(test)]
-#[path = "tests/file_opt_tests.rs"]
+#[path = "tests/file_opt_unit_test.rs"]
 mod file_opt_tests;
